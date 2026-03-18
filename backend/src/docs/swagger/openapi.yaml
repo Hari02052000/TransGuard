@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: TransGuard API
+  version: 1.0.0
+  description: Full API documentation for TransGuard FinOps Transaction Monitoring System
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local development server
+  
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized - JWT missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+paths:
+  # Authentication module
+  /auth/login:
+    $ref: './modules/auth.yaml#/paths/~1auth~1login'
+
+  /auth/register:
+    $ref: './modules/auth.yaml#/paths/~1auth~1register'
+
+  /auth/refresh:
+    $ref: './modules/auth.yaml#/paths/~1auth~1refresh'
+
+  /auth/me:
+    $ref: './modules/auth.yaml#/paths/~1auth~1me'
+
+  /auth/logout:
+    $ref: './modules/auth.yaml#/paths/~1auth~1logout'
+  # Transactions module
+  /transactions:
+    $ref: './modules/transactions.yaml#/paths/~1transactions'
+
+  /transactions/{id}:
+    $ref: './modules/transactions.yaml#/paths/~1transactions~1{id}'
+  # Risk module
+  /risk/rules:
+    $ref: './modules/risk.yaml#/paths/~1risk~1rules'
+
+  /risk/evaluate/{transactionId}:
+    $ref: './modules/risk.yaml#/paths/~1risk~1evaluate~1{transactionId}'
+
+  /risk/transactions/{transactionId}:
+    $ref: './modules/risk.yaml#/paths/~1risk~1transactions~1{transactionId}'
+  # Alerts module
+
+  /alerts:
+   $ref: './modules/alerts.yaml#/paths/~1alerts'
+
+  /alerts/{id}:
+   $ref: './modules/alerts.yaml#/paths/~1alerts~1{id}'
+
+  /alerts/{id}/status:
+   $ref: './modules/alerts.yaml#/paths/~1alerts~1{id}~1status'
+
+  /alerts/{id}/assign:
+   $ref: './modules/alerts.yaml#/paths/~1alerts~1{id}~1assign'
+
+  /alerts/{id}/notes:
+   $ref: './modules/alerts.yaml#/paths/~1alerts~1{id}~1notes'
+
+  /alerts/transaction/{transactionId}:
+   $ref: './modules/alerts.yaml#/paths/~1alerts~1transaction~1{transactionId}'
+
+  /alerts/stats:
+   $ref: './modules/alerts.yaml#/paths/~1alerts~1stats'
+   # Rules module
+
+  /rules:
+   $ref: './modules/rules.yaml#/paths/~1rules'
+
+  /rules/{id}:
+   $ref: './modules/rules.yaml#/paths/~1rules~1{id}'
+
+  /rules/{id}/toggle:
+   $ref: './modules/rules.yaml#/paths/~1rules~1{id}~1toggle'
+   # Users module
+
+  /users:
+   $ref: './modules/users.yaml#/paths/~1users'
+
+  /users/{id}:
+   $ref: './modules/users.yaml#/paths/~1users~1{id}'
+
+  /users/{id}/role:
+   $ref: './modules/users.yaml#/paths/~1users~1{id}~1role'
+
+  /users/{id}/status:
+   $ref: './modules/users.yaml#/paths/~1users~1{id}~1status'
+   # Audit logs module
+
+  /audit-logs:
+   $ref: './modules/audit.yaml#/paths/~1audit-logs'
+
+  /audit-logs/{id}:
+   $ref: './modules/audit.yaml#/paths/~1audit-logs~1{id}'
+
+  /audit-logs/entity/{entityId}:
+   $ref: './modules/audit.yaml#/paths/~1audit-logs~1entity~1{entityId}'
+
+  /audit-logs/user/{userId}:
+   $ref: './modules/audit.yaml#/paths/~1audit-logs~1user~1{userId}'
+   # Dashboard module
+
+  /dashboard/summary:
+   $ref: './modules/dashboard.yaml#/paths/~1dashboard~1summary'
+
+  /dashboard/alerts-trend:
+   $ref: './modules/dashboard.yaml#/paths/~1dashboard~1alerts-trend'
+
+  /dashboard/risk-distribution:
+   $ref: './modules/dashboard.yaml#/paths/~1dashboard~1risk-distribution'
+
+  /dashboard/transactions-volume:
+   $ref: './modules/dashboard.yaml#/paths/~1dashboard~1transactions-volume'
+  
+

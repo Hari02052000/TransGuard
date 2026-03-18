@@ -1,0 +1,135 @@
+paths:
+
+  /dashboard/summary:
+    get:
+      tags: [Dashboard]
+      summary: System summary metrics
+      description: Retrieve high level system statistics.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Summary statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/UnauthorizedError'
+
+
+  /dashboard/alerts-trend:
+    get:
+      tags: [Dashboard]
+      summary: Alerts trend
+      description: Retrieve alert counts over time.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: days
+          schema:
+            type: integer
+            example: 7
+          description: Number of days for trend
+      responses:
+        '200':
+          description: Alerts trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertsTrend'
+
+
+  /dashboard/risk-distribution:
+    get:
+      tags: [Dashboard]
+      summary: Risk distribution
+      description: Distribution of risk levels among transactions.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Risk distribution data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskDistribution'
+
+
+  /dashboard/transactions-volume:
+    get:
+      tags: [Dashboard]
+      summary: Transaction volume
+      description: Transaction volume statistics.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: days
+          schema:
+            type: integer
+            example: 30
+      responses:
+        '200':
+          description: Transaction volume data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionVolume'
+
+
+components:
+  schemas:
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalTransactions:
+          type: integer
+        highRiskTransactions:
+          type: integer
+        openAlerts:
+          type: integer
+        resolvedAlerts:
+          type: integer
+        fraudRate:
+          type: number
+      required:
+        - totalTransactions
+        - openAlerts
+
+
+    AlertsTrend:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        alertsCount:
+          type: integer
+
+
+    RiskDistribution:
+      type: object
+      properties:
+        low:
+          type: integer
+        medium:
+          type: integer
+        high:
+          type: integer
+
+
+    TransactionVolume:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        transactions:
+          type: integer

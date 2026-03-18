@@ -1,0 +1,210 @@
+openapi: 3.0.0
+info:
+  title: TransGuard Transactions API
+  version: 1.0.0
+  description: |
+    Module for managing and querying transactions in TransGuard FinOps system.
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local development server
+
+tags:
+  - name: Transactions
+    description: Transaction management endpoints
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique transaction ID
+        userId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+        country:
+          type: string
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - amount
+        - currency
+        - country
+        - status
+        - timestamp
+
+    TransactionListResponse:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        total:
+          type: integer
+          description: Total number of matching transactions
+      required:
+        - transactions
+        - total
+
+    TransactionQueryParams:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        sortBy:
+          type: string
+          example: "amount"
+        sortOrder:
+          type: string
+          enum: [asc, desc]
+          example: "desc"
+        minAmount:
+          type: number
+        maxAmount:
+          type: number
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        country:
+          type: string
+      required: []
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+
+paths:
+  /transactions:
+    get:
+      summary: List all transactions (with filters & pagination)
+      tags: [Transactions]
+      security:
+        - bearerAuth: [] # only authorized users
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Sort order
+        - in: query
+          name: minAmount
+          schema:
+            type: number
+          description: Minimum transaction amount
+        - in: query
+          name: maxAmount
+          schema:
+            type: number
+          description: Maximum transaction amount
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, completed, failed]
+          description: Filter by status
+        - in: query
+          name: country
+          schema:
+            type: string
+          description: Filter by country
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /transactions/{id}:
+    get:
+      summary: Get transaction by ID
+      tags: [Transactions]
+      security:
+        - bearerAuth: [] # only authorized users
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Transaction ID
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

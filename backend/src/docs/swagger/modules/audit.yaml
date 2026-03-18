@@ -1,0 +1,137 @@
+paths:
+
+  /audit-logs:
+    get:
+      tags: [AuditLogs]
+      summary: List audit logs
+      description: Retrieve system audit logs.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: Filter logs by user
+        - in: query
+          name: action
+          schema:
+            type: string
+          description: Filter logs by action
+        - in: query
+          name: entityType
+          schema:
+            type: string
+            enum: [alert, rule, transaction, user]
+      responses:
+        '200':
+          description: Audit logs list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+        '401':
+          $ref: '../openapi.yaml#/components/responses/UnauthorizedError'
+
+
+  /audit-logs/{id}:
+    get:
+      tags: [AuditLogs]
+      summary: Get audit log details
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+        '404':
+          $ref: '../openapi.yaml#/components/responses/NotFoundError'
+
+
+  /audit-logs/entity/{entityId}:
+    get:
+      tags: [AuditLogs]
+      summary: Logs for entity
+      description: Retrieve audit logs related to a specific entity.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: entityId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Entity logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+
+
+  /audit-logs/user/{userId}:
+    get:
+      tags: [AuditLogs]
+      summary: Logs by user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLog'
+
+
+components:
+  schemas:
+
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        action:
+          type: string
+          example: UPDATE_ALERT_STATUS
+        entityType:
+          type: string
+          enum: [alert, rule, transaction, user]
+        entityId:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - id
+        - action
+        - entityType
+        - timestamp

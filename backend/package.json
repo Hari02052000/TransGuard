@@ -11,7 +11,10 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/server.js",
     "swagger:bundle": "swagger-cli bundle ./src/docs/swagger/openapi.yaml -o ./src/docs/swagger/bundled.json --type json",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
+
   },
   "lint-staged": {
     "*.ts": [

@@ -5,7 +5,7 @@
     "lib": ["ES2022"],
     "module": "CommonJS",
     "moduleResolution": "node",
-
+    "types": ["vitest/globals"],
     /* Project Structure */
     "rootDir": "./src",
     "outDir": "./dist",

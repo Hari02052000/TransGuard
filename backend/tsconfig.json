@@ -28,9 +28,7 @@
     /* Clean Architecture Path Aliases */
     "baseUrl": "./src",
     "paths": {
-      "@modules/*": ["modules/*"],
-      "@shared/*": ["shared/*"],
-      "@config/*": ["config/*"]
+      "@src/*": ["*"]
     }
   },
   "include": ["src"],

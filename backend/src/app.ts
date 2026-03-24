@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 const swaggerDocument = setupSwaggerDoc();
 app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'O' });
+  res.status(200).json({ status: 'OK' });
 });
 app.use(
   '/api-docs',

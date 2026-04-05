@@ -1,4 +1,4 @@
-import { User,SafeUser } from '@src/modules/auth/domain';
+import type { User, SafeUser } from '@src/modules/auth/domain';
 
 export interface RegisterInput {
   name: string;
@@ -11,7 +11,8 @@ export interface LoginInput {
   password: string;
 }
 
-export interface AuthTokens {
+export interface LoginOutput {
+  user: SafeUser;
   accessToken: string;
   refreshToken: string;
 }
@@ -19,9 +20,9 @@ export interface AuthTokens {
 export interface AuthServiceInterface {
   register(input: RegisterInput): Promise<SafeUser>;
 
-  login(input: LoginInput): Promise<AuthTokens>;
+  login(input: LoginInput): Promise<LoginOutput>;
 
-  refreshToken(token: string): Promise<AuthTokens>;
+  refreshToken(token: string): Promise<LoginOutput>;
 
   logout(userId: string): Promise<void>;
 

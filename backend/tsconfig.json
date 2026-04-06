@@ -16,6 +16,10 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
 
+    /* Decorators for DI */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     /* Interop */
     "esModuleInterop": true,
     "resolveJsonModule": true,

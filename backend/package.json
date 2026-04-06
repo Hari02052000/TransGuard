@@ -14,7 +14,6 @@
     "prepare": "husky",
     "test": "vitest",
     "test:watch": "vitest --watch"
-
   },
   "lint-staged": {
     "*.ts": [
@@ -24,8 +23,10 @@
   },
   "dependencies": {
     "express": "^5.2.1",
+    "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "tsyringe": "^4.10.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

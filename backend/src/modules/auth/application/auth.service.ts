@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { injectable, inject } from 'tsyringe';
 import type { SafeUser, UserRepositoryInterface } from '@src/modules/auth/domain';
 import { User } from '@src/modules/auth/domain/user.entity';
 import type {
@@ -6,21 +7,23 @@ import type {
   LoginOutput,
   LoginInput,
   RegisterInput,
-  PasswordHasherInterface,
-  TokenServiceInterface,
+  TokenServiceInterface
 } from '@src/modules/auth/application/interfaces';
+import type { PasswordHasherInterface } from '@src/modules/auth/infrastructure/password.hasher';
 import {
   ValidationError,
   ConflictError,
   InternalServerError,
   UnauthorizedError,
 } from '@src/shared/errors';
+import { UserRepositoryToken, PasswordHasherToken, TokenServiceToken } from '@src/modules/auth/di/auth.tokens';
 
+@injectable()
 export class AuthService implements AuthServiceInterface {
   constructor(
-    private readonly userRepo: UserRepositoryInterface,
-    private readonly hasher: PasswordHasherInterface,
-    private readonly tokenService: TokenServiceInterface,
+    @inject(UserRepositoryToken) private readonly userRepo: UserRepositoryInterface,
+    @inject(PasswordHasherToken) private readonly hasher: PasswordHasherInterface,
+    @inject(TokenServiceToken) private readonly tokenService: TokenServiceInterface,
   ) {}
   async register(input: RegisterInput): Promise<SafeUser> {
     try {

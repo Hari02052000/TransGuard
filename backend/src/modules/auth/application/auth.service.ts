@@ -7,7 +7,7 @@ import type {
   LoginOutput,
   LoginInput,
   RegisterInput,
-  TokenServiceInterface
+  TokenServiceInterface,
 } from '@src/modules/auth/application/interfaces';
 import type { PasswordHasherInterface } from '@src/modules/auth/infrastructure/password.hasher';
 import {
@@ -16,7 +16,11 @@ import {
   InternalServerError,
   UnauthorizedError,
 } from '@src/shared/errors';
-import { UserRepositoryToken, PasswordHasherToken, TokenServiceToken } from '@src/modules/auth/di/auth.tokens';
+import {
+  UserRepositoryToken,
+  PasswordHasherToken,
+  TokenServiceToken,
+} from '@src/modules/auth/di/auth.tokens';
 
 @injectable()
 export class AuthService implements AuthServiceInterface {
@@ -94,16 +98,71 @@ export class AuthService implements AuthServiceInterface {
       throw new InternalServerError('Failed to login');
     }
   }
-  refreshToken(token: string): Promise<LoginOutput> {
-    console.log(token);
-    throw new Error('Method not implemented.');
+  async refreshToken(token: string): Promise<Omit<LoginOutput, 'refreshToken'>> {
+    try {
+      if (!token) {
+        throw new ValidationError('Refresh token is required');
+      }
+
+      let payload;
+      try {
+        payload = await this.tokenService.verifyRefreshToken(token);
+      } catch {
+        throw new UnauthorizedError('Invalid refresh token');
+      }
+
+      const user = await this.userRepo.findById(payload.userId);
+      if (!user || !user.isActive()) {
+        throw new UnauthorizedError('Invalid refresh token');
+      }
+
+      const accessToken = this.tokenService.generateAccessToken({
+        userId: user.id,
+        role: user.role,
+      });
+
+      return {
+        user: user.toSafeObject(),
+        accessToken,
+      };
+    } catch (error) {
+      if (error instanceof ValidationError || error instanceof UnauthorizedError) {
+        throw error;
+      }
+      throw new InternalServerError('Failed to refresh token');
+    }
   }
-  logout(userId: string): Promise<void> {
-    console.log(userId);
-    throw new Error('Method not implemented.');
+
+  async logout(userId: string): Promise<void> {
+    try {
+      if (!userId) {
+        throw new ValidationError('User id is required');
+      }
+
+      const user = await this.userRepo.findById(userId);
+      if (!user) {
+        throw new UnauthorizedError('Invalid user');
+      }
+    } catch (error) {
+      if (error instanceof ValidationError || error instanceof UnauthorizedError) {
+        throw error;
+      }
+      throw new InternalServerError('Failed to logout');
+    }
   }
-  getMe(userId: string): Promise<User | null> {
-    console.log(userId);
-    throw new Error('Method not implemented.');
+
+  async getMe(userId: string): Promise<User | null> {
+    try {
+      if (!userId) {
+        throw new ValidationError('User id is required');
+      }
+
+      return await this.userRepo.findById(userId);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        throw error;
+      }
+      throw new InternalServerError('Failed to get current user');
+    }
   }
 }

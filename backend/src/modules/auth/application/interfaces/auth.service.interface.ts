@@ -22,7 +22,7 @@ export interface AuthServiceInterface {
 
   login(input: LoginInput): Promise<LoginOutput>;
 
-  refreshToken(token: string): Promise<LoginOutput>;
+  refreshToken(token: string): Promise<Omit<LoginOutput, 'refreshToken'>>;
 
   logout(userId: string): Promise<void>;
 
